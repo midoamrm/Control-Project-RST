@@ -791,6 +791,20 @@ function pushbutton1_Callback(hObject, eventdata, handles)%update plant only
 % handles    structure with handles and user data (see GUIDATA)
 [Ts Bp Ap Hr Hs dist P Bm Am]=acquire_data(handles);
 
+
+fileID = fopen('AB.h','w');
+fprintf(fileID,'#define A(1) %f\n',Ap(1));
+fprintf(fileID,'#define A(2) %f\n',Ap(2));
+fprintf(fileID,'#define A(3) %f\n',Ap(3));
+
+
+fprintf(fileID,'#define B(1) %f\n',Bp(1));
+fprintf(fileID,'#define B(2) %f\n',Bp(2));
+fprintf(fileID,'#define B(3) %f\n',Bp(3));
+
+fclose(fileID);
+
+
 R=str2num(get(handles.edit17, 'string'));%full R S T values
 S=str2num(get(handles.edit18, 'string'));
 T=str2num(get(handles.edit19, 'string'));
@@ -857,6 +871,26 @@ S=conv(S, Hs);
 set(handles.edit17, 'string',['[' num2str(R) ']']);
 set(handles.edit18, 'string',['[' num2str(S) ']']);
 set(handles.edit19, 'string',['[' num2str(T) ']']);
+
+
+fileID = fopen('RST.h','w');
+fprintf(fileID,'#define R(1) %f\n',R(1));
+fprintf(fileID,'#define R(2) %f\n',R(2));
+fprintf(fileID,'#define R(3) %f\n',R(3));
+
+
+fprintf(fileID,'#define S(1) %f\n',S(1));
+fprintf(fileID,'#define S(2) %f\n',S(2));
+fprintf(fileID,'#define S(3) %f\n',S(3));
+
+fprintf(fileID,'#define T(1) %f\n',T(1));
+fprintf(fileID,'#define T(2) %f\n',T(2));
+fprintf(fileID,'#define T(3) %f\n',T(3));
+
+
+fclose(fileID);
+
+
 
 simulate_RST(Ts, Bp, Ap, R, S, T, Bm, Am, dist, handles);
 

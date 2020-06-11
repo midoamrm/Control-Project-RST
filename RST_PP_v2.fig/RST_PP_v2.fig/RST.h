@@ -1,0 +1,9 @@
+#define R(1) 2.999998
+#define R(2) -3.939001
+#define R(3) 1.314187
+#define S(1) 1.000000
+#define S(2) -0.374197
+#define S(3) -0.625803
+#define T(1) 3.333333
+#define T(2) -4.580657
+#define T(3) 1.622508

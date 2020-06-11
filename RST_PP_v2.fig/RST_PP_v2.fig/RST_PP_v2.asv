@@ -89,8 +89,8 @@ set(handles.edit4, 'string','[10 1]');%den
 set(handles.checkbox1, 'value',0);%discrete plant
 
         %discrete plant
-set(handles.edit5, 'string','[0 0.1 0.2]');%Bp
-set(handles.edit6, 'string','[1 -1.3 0.42]');%Ap
+set(handles.edit5, 'string','[0 0.1 0.2]');%Initializing Bp
+set(handles.edit6, 'string','[1 -1.3 0.42]');%Initializing Ap
 
 set(handles.checkbox2, 'value',1);%continuous design criteria
 
@@ -102,7 +102,7 @@ set(handles.edit11, 'string','[1 -1.3741 0.4867]');%P (just in case)
         %tracking Bm(z)/Am(z)
 set(handles.edit9, 'string','0.5');%w0
 set(handles.edit10, 'string','0.9');%zeta
-set(handles.edit12, 'string','[0.09270.0687]');%Bm
+set(handles.edit12, 'string','[0.0687]');%Bm
 set(handles.edit13, 'string','[1 -1.2451 0.4066]');%Am (just in case)
 
 set(handles.edit14, 'string','1');%Hr
@@ -791,6 +791,20 @@ function pushbutton1_Callback(hObject, eventdata, handles)%update plant only
 % handles    structure with handles and user data (see GUIDATA)
 [Ts Bp Ap Hr Hs dist P Bm Am]=acquire_data(handles);
 
+
+fileID = fopen('cldp.h','w');
+fprintf(fileID,'#define A(1) %f\n',Ap(1));
+fprintf(fileID,'#define A(2) %f\n',Ap(2));
+fprintf(fileID,'#define A(3) %f\n',Ap(3));
+
+
+fprintf(fileID,'#define B(1) %f\n',Bp(1));
+fprintf(fileID,'#define B(2) %f\n',Bp(2));
+fprintf(fileID,'#define B(3) %f\n',Bp(3));
+
+fclose(fileID);
+
+
 R=str2num(get(handles.edit17, 'string'));%full R S T values
 S=str2num(get(handles.edit18, 'string'));
 T=str2num(get(handles.edit19, 'string'));
@@ -857,6 +871,26 @@ S=conv(S, Hs);
 set(handles.edit17, 'string',['[' num2str(R) ']']);
 set(handles.edit18, 'string',['[' num2str(S) ']']);
 set(handles.edit19, 'string',['[' num2str(T) ']']);
+
+
+fileID = fopen('RST.h','w');
+fprintf(fileID,'#define R(1) %f\n',R(1));
+fprintf(fileID,'#define R(2) %f\n',R(2));
+fprintf(fileID,'#define R(3) %f\n',R(3));
+
+
+fprintf(fileID,'#define S(1) %f\n',S(1));
+fprintf(fileID,'#define S(2) %f\n',S(2));
+fprintf(fileID,'#define S(3) %f\n',S(3));
+
+fprintf(fileID,'#define T(1) %f\n',T(1));
+fprintf(fileID,'#define T(2) %f\n',T(2));
+fprintf(fileID,'#define T(3) %f\n',T(3));
+
+
+fclose(fileID);
+
+
 
 simulate_RST(Ts, Bp, Ap, R, S, T, Bm, Am, dist, handles);
 
@@ -979,5 +1013,20 @@ add_line(name, 'Sum2/1', 'R(z)/1');
 
 x=x-195;
 add_line(name, 'R(z)/1)', 'Sum1/2');
+
+arr = [];
+arr = [arr get_param(strcat(name, '/T(z)'), 'handle') ];
+arr = [arr get_param(strcat(name, '/Sum1' ), 'handle') ];
+arr = [arr get_param(strcat(name, '/1//S(z)'), 'handle') ];
+arr = [arr get_param(strcat(name, '/R(z)'), 'handle') ];
+
+Simulink.BlockDiagram.createSubSystem(arr);
+   
 open_system(sys);
+
+rtwbuild(strcat(name,'/Subsystem'));
+%to run the .bat file
+system('D:\Control Project\cmd for keil.bat')
+
+
 %clear;
